@@ -1,11 +1,7 @@
 #import and set up everything
-import pandas as pd
-import numpy as np
 import sys
 sys.path.append("../PhaseFold")
-import os
-import data
-from data import loaders
+
 import lightkurve as lk
 import scipy.signal
 import matplotlib.pyplot as plt
@@ -14,7 +10,6 @@ from PIL import Image
 import warnings
 from ipywidgets.widgets import Button, Layout
 from IPython.display import display
-import functools
 
 warnings.filterwarnings("ignore", category=RuntimeWarning) 
 #before using the functions, create a folder called LightCurves
@@ -140,7 +135,7 @@ def foldsaveprint(lcurve, sect):
 
     
 # Combines the seperate 3 pngs into one png
-def combinefiles(ticid,sect):
+def combinefiles(lc,sect):
     '''
     Combines the 3 individual graphs (original, periodogram, and folded light curve) of the light curve into one png
     
