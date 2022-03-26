@@ -262,7 +262,7 @@ def calcresidualstddevmin(lc, num):
     phasecurve = lc.fold(num)[:]
     cleanlcmod = cleanlightcurve[:]
     cleanlcmod.flux = scipy.signal.medfilt(cleanlightcurve.flux, kernel_size=13)
-    residual = cleanlcmod.flux - cleanlightcurve.flux
+    residual = cleanlcmod.flux.value - cleanlightcurve.flux.value
     ressqr = 0
     for x in range(len(cleanlcmod)):
         ressqr = ressqr + (residual[x] ** 2)
@@ -275,7 +275,7 @@ def calcresidualstddevmax(lc, num):
     phasecurve = lc.fold(num)[:]
     cleanlcmod = cleanlightcurve[:]
     cleanlcmod.flux = scipy.signal.medfilt(cleanlightcurve.flux, kernel_size=13)
-    residual = cleanlcmod.flux - cleanlightcurve.flux
+    residual = cleanlcmod.flux.value - cleanlightcurve.flux.value
     ressqr = 0
     for x in range(len(cleanlcmod)):
         ressqr = ressqr + (residual[x] ** 2)
@@ -288,7 +288,7 @@ def calcresidualstddevmidpt(lc, num):
     phasecurve = lc.fold(num)[:]
     cleanlcmod = cleanlightcurve[:]
     cleanlcmod.flux = scipy.signal.medfilt(cleanlightcurve.flux, kernel_size=13)
-    residual = cleanlcmod.flux - cleanlightcurve.flux
+    residual = cleanlcmod.flux.value - cleanlightcurve.flux.value
     ressqr = 0
     for x in range(len(cleanlcmod)):
         ressqr = ressqr + (residual[x] ** 2)
