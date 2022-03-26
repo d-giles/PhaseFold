@@ -23,19 +23,20 @@ def fold(lcurve, sect):
             lcurve (lightkurve.LightCurve): a lightkurve.LightCurve object
             sect (int): the sector that the light curve is in
     '''
-    lc = lcurve
-    a = lc.scatter()
-    pg = lc.normalize(unit='ppm').to_periodogram(oversample_factor=300)
+    lightc = lcurve
+    a = lightc.scatter()
+    lc = lightc[lightc.quality==0]
+    pg = lc.normalize(unit='ppm').to_periodogram(minimum_period = 0.042, oversample_factor=300)
     period = pg.period_at_max_power
-    pg1 = lc.normalize(unit='ppm').to_periodogram(maximum_period = 2.1 * period.value, oversample_factor=100)
+    pg1 = lc.normalize(unit='ppm').to_periodogram(maximum_period = 2.1*period.value, oversample_factor=100)
     mini = .7*period
     maxi = 1.3*period
     midpt = (mini + maxi)/2
     b = pg1.plot(view='period')
     midpt = redef(mini, maxi, midpt, lc)
     folded = lc.fold(midpt)
-    cleanlightcurve = folded[folded.quality==0]
-    c = cleanlightcurve.scatter(label=fr'Period = {midpt.value:.5f} d')
+    #cleanlightcurve = folded[folded.quality==0]
+    c = folded.scatter(label=fr'Period = {midpt.value:.5f} d')
     
     #creates the save button that can be used to save the images, as well as the combined version
     b_save = Button (description = 'save', layout = Layout(width='100px'))
@@ -68,12 +69,13 @@ def foldandsave(lcurve, sect):
             lcurve (lightkurve.LightCurve): a lightkurve.LightCurve object
             sect (int): the sector that the light curve is in
     '''
-    lc = lcurve
-    a = lc.scatter()
+    lightc = lcurve
+    a = lightc.scatter()
+    lc = lightc[lightc.quality==0]
     a.figure.savefig(f'LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_LC.png')
-    pg = lc.normalize(unit='ppm').to_periodogram(oversample_factor=300)
+    pg = lc.normalize(unit='ppm').to_periodogram(minimum_period = 0.042, oversample_factor=300)
     period = pg.period_at_max_power
-    pg1 = lc.normalize(unit='ppm').to_periodogram(maximum_period = 2.1 * period.value, oversample_factor=100)
+    pg1 = lc.normalize(unit='ppm').to_periodogram(maximum_period = 2.1*period.value, oversample_factor=100)
     mini = .7*period
     maxi = 1.3*period
     midpt = (mini + maxi)/2
@@ -81,8 +83,7 @@ def foldandsave(lcurve, sect):
     b.figure.savefig(f'LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_Periodogram.png')
     midpt = redef(mini, maxi, midpt, lc)
     folded = lc.fold(midpt)
-    cleanlightcurve = folded[folded.quality==0]
-    c = cleanlightcurve.scatter(label=fr'Period = {midpt.value:.5f} d')
+    c = folded.scatter(label=fr'Period = {midpt.value:.5f} d')
     plt.close('all')
     c.figure.savefig(f'LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_Folded.png')
     images = [Image.open(x) for x in [f'./LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_LC.png', f'./LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_Periodogram.png', f'./LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_Folded.png']]
@@ -106,12 +107,13 @@ def foldsaveprint(lcurve, sect):
             lcurve (lightkurve.LightCurve): a lightkurve.LightCurve object
             sect (int): the sector that the light curve is in
     '''
-    lc = lcurve
-    a = lc.scatter()
+    lightc = lcurve
+    a = lightc.scatter()
+    lc = lightc[lightc.quality==0]
     a.figure.savefig(f'LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_LC.png')
-    pg = lc.normalize(unit='ppm').to_periodogram(oversample_factor=300)
+    pg = lc.normalize(unit='ppm').to_periodogram(minimum_period = 0.042, oversample_factor=300)
     period = pg.period_at_max_power
-    pg1 = lc.normalize(unit='ppm').to_periodogram(maximum_period = 2.1 * period.value, oversample_factor=100)
+    pg1 = lc.normalize(unit='ppm').to_periodogram(maximum_period = 2.1*period.value, oversample_factor=100)
     mini = .7*period
     maxi = 1.3*period
     midpt = (mini + maxi)/2
@@ -119,8 +121,7 @@ def foldsaveprint(lcurve, sect):
     b.figure.savefig(f'LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_Periodogram.png')
     midpt = redef(mini, maxi, midpt, lc)
     folded = lc.fold(midpt)
-    cleanlightcurve = folded[folded.quality==0]
-    c = cleanlightcurve.scatter(label=fr'Period = {midpt.value:.5f} d')
+    c = folded.scatter(label=fr'Period = {midpt.value:.5f} d')
     c.figure.savefig(f'LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_Folded.png')
     images = [Image.open(x) for x in [f'./LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_LC.png', f'./LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_Periodogram.png', f'./LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_Folded.png']]
     widths, heights = zip(*(i.size for i in images))
@@ -170,19 +171,19 @@ def graphfoldprint(lcurve, sect):
             lcurve (lightkurve.LightCurve): a lightkurve.LightCurve object
             sect (int): the sector that the light curve is in
     '''
-    lc = lcurve
-    a = lc.scatter()
-    pg = lc.normalize(unit='ppm').to_periodogram(oversample_factor=300)
+    lightc = lcurve
+    a = lightc.scatter()
+    lc = lightc[lightc.quality==0]
+    pg = lc.normalize(unit='ppm').to_periodogram(minimum_period = 0.042, oversample_factor=300)
     period = pg.period_at_max_power
-    pg1 = lc.normalize(unit='ppm').to_periodogram(maximum_period = 2.1 * period.value, oversample_factor=100)
+    pg1 = lc.normalize(unit='ppm').to_periodogram(maximum_period = 2.1*period.value, oversample_factor=100)
     mini = .7*period
     maxi = 1.3*period
     midpt = (mini + maxi)/2
     b = pg1.plot(view='period')
     midpt = redef(mini, maxi, midpt, lc)
     folded = lc.fold(midpt)
-    cleanlightcurve = folded[folded.quality==0]
-    c = cleanlightcurve.scatter(label=fr'Period = {midpt.value:.5f} d')
+    c = folded.scatter(label=fr'Period = {midpt.value:.5f} d')
 
 # Function to save the original graph, periodogram, and phasefolded graph in the 
 # LightCurves folder without combining them
@@ -196,12 +197,13 @@ def graphfoldsave(lcurve, sect):
             sect (int): the sector that the light curve is in
     '''
         
-    lc = lcurve
-    a = lc.scatter()
+    lightc = lcurve
+    a = lightc.scatter()
+    lc = lightc[lightc.quality==0]
     a.figure.savefig(f'LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_LC.png')
-    pg = lc.normalize(unit='ppm').to_periodogram(oversample_factor=300)
+    pg = lc.normalize(unit='ppm').to_periodogram(minimum_period = 0.042, oversample_factor=300)
     period = pg.period_at_max_power
-    pg1 = lc.normalize(unit='ppm').to_periodogram(maximum_period = 2.1 * period.value, oversample_factor=100)
+    pg1 = lc.normalize(unit='ppm').to_periodogram(maximum_period = 2.1*period.value, oversample_factor=100)
     mini = .7*period
     maxi = 1.3*period
     midpt = (mini + maxi)/2
