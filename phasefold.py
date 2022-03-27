@@ -11,6 +11,8 @@ import warnings
 from ipywidgets.widgets import Button, Layout
 from IPython.display import display
 
+import os
+
 warnings.filterwarnings("ignore", category=RuntimeWarning) 
 #before using the functions, create a folder called LightCurves
 
@@ -41,6 +43,8 @@ def fold(lcurve, sect):
     #creates the save button that can be used to save the images, as well as the combined version
     b_save = Button (description = 'save', layout = Layout(width='100px'))
     def bsave(b_save):
+        if not os.path.exists(f"LightCurves/S{sect}TIC{lc.TARGETID}"):
+            os.path.makedirs(f"LightCurves/S{sect}TIC{lc.TARGETID}")
         a.figure.savefig(f'LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_LC.png')
         b.figure.savefig(f'LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_Periodogram.png')
         c.figure.savefig(f'LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_Folded.png')
