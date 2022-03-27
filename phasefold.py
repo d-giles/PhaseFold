@@ -44,7 +44,7 @@ def fold(lcurve, sect):
     b_save = Button (description = 'save', layout = Layout(width='100px'))
     def bsave(b_save):
         if not os.path.exists(f"LightCurves/S{sect}TIC{lc.TARGETID}"):
-            os.path.makedirs(f"LightCurves/S{sect}TIC{lc.TARGETID}")
+            os.makedirs(f"LightCurves/S{sect}TIC{lc.TARGETID}")
         a.figure.savefig(f'LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_LC.png')
         b.figure.savefig(f'LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_Periodogram.png')
         c.figure.savefig(f'LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_Folded.png')
