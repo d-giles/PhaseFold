@@ -1,11 +1,7 @@
 #import and set up everything
-import pandas as pd
-import numpy as np
 import sys
 sys.path.append("../PhaseFold")
-import os
-import data
-from data import loaders
+
 import lightkurve as lk
 import scipy.signal
 import matplotlib.pyplot as plt
@@ -14,7 +10,8 @@ from PIL import Image
 import warnings
 from ipywidgets.widgets import Button, Layout
 from IPython.display import display
-import functools
+
+import os
 
 warnings.filterwarnings("ignore", category=RuntimeWarning) 
 #before using the functions, create a folder called LightCurves
@@ -46,6 +43,8 @@ def fold(lcurve, sect):
     #creates the save button that can be used to save the images, as well as the combined version
     b_save = Button (description = 'save', layout = Layout(width='100px'))
     def bsave(b_save):
+        if not os.path.exists(f"LightCurves/S{sect}TIC{lc.TARGETID}"):
+            os.makedirs(f"LightCurves/S{sect}TIC{lc.TARGETID}")
         a.figure.savefig(f'LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_LC.png')
         b.figure.savefig(f'LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_Periodogram.png')
         c.figure.savefig(f'LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_Folded.png')
@@ -141,7 +140,7 @@ def foldsaveprint(lcurve, sect):
 
     
 # Combines the seperate 3 pngs into one png
-def combinefiles(ticid,sect):
+def combinefiles(lc,sect):
     '''
     Combines the 3 individual graphs (original, periodogram, and folded light curve) of the light curve into one png
     
@@ -267,7 +266,7 @@ def calcresidualstddevmin(lc, num):
     phasecurve = lc.fold(num)[:]
     cleanlcmod = cleanlightcurve[:]
     cleanlcmod.flux = scipy.signal.medfilt(cleanlightcurve.flux, kernel_size=13)
-    residual = cleanlcmod.flux - cleanlightcurve.flux
+    residual = cleanlcmod.flux.value - cleanlightcurve.flux.value
     ressqr = 0
     for x in range(len(cleanlcmod)):
         ressqr = ressqr + (residual[x] ** 2)
@@ -280,7 +279,7 @@ def calcresidualstddevmax(lc, num):
     phasecurve = lc.fold(num)[:]
     cleanlcmod = cleanlightcurve[:]
     cleanlcmod.flux = scipy.signal.medfilt(cleanlightcurve.flux, kernel_size=13)
-    residual = cleanlcmod.flux - cleanlightcurve.flux
+    residual = cleanlcmod.flux.value - cleanlightcurve.flux.value
     ressqr = 0
     for x in range(len(cleanlcmod)):
         ressqr = ressqr + (residual[x] ** 2)
@@ -293,7 +292,7 @@ def calcresidualstddevmidpt(lc, num):
     phasecurve = lc.fold(num)[:]
     cleanlcmod = cleanlightcurve[:]
     cleanlcmod.flux = scipy.signal.medfilt(cleanlightcurve.flux, kernel_size=13)
-    residual = cleanlcmod.flux - cleanlightcurve.flux
+    residual = cleanlcmod.flux.value - cleanlightcurve.flux.value
     ressqr = 0
     for x in range(len(cleanlcmod)):
         ressqr = ressqr + (residual[x] ** 2)
