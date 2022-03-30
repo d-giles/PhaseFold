@@ -16,6 +16,45 @@ import os
 warnings.filterwarnings("ignore", category=RuntimeWarning) 
 #before using the functions, create a folder called LightCurves
 
+def foldperiod(lcurve, sect, givenperiod):
+    '''
+    Phase folds the given light curve using the given period and outputs 3 graphs: the original light curve, the periodogram, and the folded light curve
+    As well as gives the option to save the 3 graphs and the combined graph in the LightCurves folder.
+    
+        Parameters:
+            lcurve (lightkurve.LightCurve): a lightkurve.LightCurve object
+            sect (int): the sector that the light curve is in
+            givenperiod (int): the period that the light curve will be folded using
+    '''
+    lightc = lcurve
+    a = lightc.scatter()
+    lc = lightc[lightc.quality==0]
+    pg = lc.normalize(unit='ppm').to_periodogram(minimum_period = 0.042, oversample_factor=300)
+    period = pg.period_at_max_power
+    pg1 = lc.normalize(unit='ppm').to_periodogram(maximum_period = 2.1*period.value, oversample_factor=100)
+    b = pg1.plot(view='period')
+    folded = lc.fold(givenperiod)
+    c = folded.scatter(label=fr'Period = {givenperiod:.5f} d')
+    
+    #creates the save button that can be used to save the images, as well as the combined version
+    b_save = Button (description = 'save', layout = Layout(width='100px'))
+    def bsave(b_save):
+        a.figure.savefig(f'LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_LC.png')
+        b.figure.savefig(f'LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_Periodogram.png')
+        c.figure.savefig(f'LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_Folded.png')
+        images = [Image.open(x) for x in [f'./LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_LC.png', f'./LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_Periodogram.png', f'./LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_Folded.png']]
+        widths, heights = zip(*(i.size for i in images))
+        total_height = sum(heights)
+        min_width = min(widths)
+        new_im = Image.new('RGB', (min_width, total_height))
+        y_offset = 0
+        for im in images:
+            new_im.paste(im, (0,y_offset))
+            y_offset += im.size[1]
+        new_im.save(f'./LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}.png')
+    b_save.on_click(bsave)
+    display(b_save)
+    
 def fold(lcurve, sect):
     '''
     Phase folds the given light curve and outputs 3 graphs: the original light curve, the periodogram, and the folded light curve
@@ -145,7 +184,7 @@ def combinefiles(lc,sect):
     Combines the 3 individual graphs (original, periodogram, and folded light curve) of the light curve into one png
     
         Parameters:
-            ticid (int): the ticid of the light curve
+            lc (lightkurve.LightCurve): a lightkurve.LightCurve object
             sect (int): the sector that the light curve is in
     '''
     images = [Image.open(x) for x in [f'./LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_LC.png', f'./LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_Periodogram.png', f'./LightCurves/S{sect}TIC{lc.TARGETID}/S{sect}TIC{lc.TARGETID}_Folded.png']]
