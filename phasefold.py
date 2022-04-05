@@ -284,6 +284,15 @@ def redef(mini, maxi, midpt, lc):
         Returns: 
             midpt (double): the best period to phase fold on
     '''
+    #tests if a multiple of the midpt is better than the current one
+    twomidptresstddev = calcresidualstddevmidpt(lc, 2*midpt)
+    midptresstddev = calcresidualstddevmidpt(lc, midpt)
+    
+    if (twomidptresstddev) < (midptresstddev):
+        midpt = 2*midpt
+        mini = .7*midpt
+        maxi = 1.3*midpt
+    
     #global mini, maxi, midpt, lc
     while(mini.value + 0.0001 < maxi.value):
         minresstddev = calcresidualstddevmin(lc, mini)
@@ -295,12 +304,6 @@ def redef(mini, maxi, midpt, lc):
         else:
             mini = midpt
             midpt = (mini + maxi)/2
-    
-    #tests if a multiple of the midpt is better than the current one
-    twomidptresstddev = calcresidualstddevmidpt(lc, 2*midpt)
-    midptresstddev = calcresidualstddevmidpt(lc, midpt)
-    if (twomidptresstddev) < (midptresstddev):
-        midpt = 2*midpt
     
     return midpt
 
